@@ -30,7 +30,7 @@ npm install midifile --save
 *	Playing MIDI files. It's the role of the
  [MIDIPlayer project](https://github.com/nfroidure/MIDIPlayer).
 
-You can also find a very [trivial MIDI player](http://rest4.org/github/nfroidure/MIDIFile/master/tests/index.html)
+You can also find a very [trivial MIDI player](http://rawgit.com/nfroidure/MIDIFile/master/tests/index.html)
  in the test folder.
 
 ## Browser support
@@ -69,9 +69,9 @@ lyrics[0].text; // The text content to be displayed
 
 // Reading whole track events and filtering them yourself
 var trackEventsChunk = midiFile.getTrackEvents(0);
-var	events = new MIDIFile.createParser(trackEventsChunk);
-var event;
+var events = MIDIEvents.createParser(trackEventsChunk);
 
+var event;
 while(event=events.next()) {
 	// Printing meta events containing text only
 	if(event.type === MIDIFile.EVENT_META && event.text) {
