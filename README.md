@@ -33,9 +33,6 @@ npm install midifile --save
 You can also find a very [trivial MIDI player](http://rawgit.com/nfroidure/MIDIFile/master/tests/index.html)
  in the test folder.
 
-## Browser support
-[![Build Status](https://ci.testling.com/nfroidure/MIDIFile.svg)](https://ci.testling.com/nfroidure/MIDIFile)
-
 ## Usage
 ```js
 // Your variable with a ArrayBuffer instance containing your MIDI file
@@ -48,8 +45,8 @@ var midiFile = new MIDIFile(anyBuffer);
 midiFile.header.getFormat(); // 0, 1 or 2
 midiFile.header.getTracksCount(); // n
 // Time division
-if(midiFile.header.getTimeDivision() === MIDIFileHeader.TICKS_PER_BEAT) {
-	midiFile.header.getTicksPerBit();
+if(midiFile.header.getTimeDivision() === MIDIFile.Header.TICKS_PER_BEAT) {
+	midiFile.header.getTicksPerBeat();
 } else {
 	midiFile.header.getSMPTEFrames();
 	midiFile.header.getTicksPerFrame();
@@ -64,17 +61,24 @@ events[0].param2; // second one
 
 // Lyrics retriever
 var lyrics = midiFile.getLyrics();
-lyrics[0].playTime; // Time at wich the text must be displayed
-lyrics[0].text; // The text content to be displayed
+if ( lyrics.length ) {
+	lyrics[0].playTime; // Time at wich the text must be displayed
+	lyrics[0].text; // The text content to be displayed
+}
 
 // Reading whole track events and filtering them yourself
-var trackEventsChunk = midiFile.getTrackEvents(0);
+var events = midiFile.getTrackEvents(0);
+
+events.forEach(console.log.bind(console));
+
+// Or for a single track
+var trackEventsChunk = midiFile.tracks[0].getTrackContent();
 var events = MIDIEvents.createParser(trackEventsChunk);
 
 var event;
-while(event=events.next()) {
+while(event = events.next()) {
 	// Printing meta events containing text only
-	if(event.type === MIDIFile.EVENT_META && event.text) {
+	if(event.type === MIDIEvents.EVENT_META && event.text) {
 		console.log('Text meta: '+event.text);
 	}
 }
