@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Sample basic MIDI Recorder</title>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+   <!-- MidiFile -->
+   <script src="./../dist/MIDIFile.js" type="text/javascript"></script>
+   <script src="recorderobject.js"></script>
+  </head>
+  <body>
+    <div id="recorder1">
+      <p>
+	<select name="selectRecorder">
+	  <option value="recorderObject1">Recorder 1</option>
+	  <option value="recorderObject2">Recorder 2</option>
+	</select>
+      </p>
+      <p>
+	<button name="start-recording">Start recording</button>
+	<button name="stop-recording">Stop recording </button>
+      </p>
+      <p>
+	<button name="play">Play</button>
+	<button name="stop">Stop</button>
+	<button name="encode">Encode</button>
+      </p>
+      <p name="stado" />
+    </div>
+
+
+    <script>
+      // Initializing MIDI and connecting to Input device
+      var midiAccess;
+      var selectRecorder = $("select[name='selectRecorder']");
+      selectRecorder.on('change', changeRecorder);
+      var startRecordingButton = $("#recorder1 :button[name='start-recording']");
+      var stopRecordingButton = $("#recorder1 :button[name='stop-recording']");
+
+      var play = $("#recorder1 :button[name='play']");
+      var stop = $("#recorder1 :button[name='stop']");
+      var statusMsg = $("#recorder1 p[name='stado']");
+      var encode = $("#recorder1 :button[name='encode']");
+      statusMsg.html("Idle");
+      
+      var midiInput, midiOutput, recorderObject1, recorderObject2, selectedRecorder;
+            
+      navigator.requestMIDIAccess()
+        .then(
+          onsuccesscallback,
+          function onerrorcallback( err ) {
+            console.log("uh-oh! Something went wrong!  Error code: " + err.code );
+	  }
+        );
+      
+      function onsuccesscallback(midiAccess) {
+        var midiInputIDs = [], midiOutputIDs = [];
+        // testing output
+          if(midiAccess) {
+            midiAccess.inputs.forEach(function(port){
+              console.log("Available input:", port.name);
+              midiInputIDs.push(port.id);
+            });
+            midiInput = midiAccess.inputs.get(midiInputIDs[0]);
+            if (midiInput) {
+              console.log("Selected input:", midiInput.name);
+	      recorderObject1 = new RecorderObject(statusMsg);
+	      recorderObject2 = new RecorderObject(statusMsg);
+              addListeners();
+            } else {
+               console.log("No MIDI input devices connected.");
+	    }
+	    // get midiOutputs
+	    midiAccess.outputs.forEach(function(port){
+              console.log("Available output:", port.name);
+              midiOutputIDs.push(port.id);
+            });
+            midiOutput = midiAccess.outputs.get(midiOutputIDs[0]);
+            if (midiOutput) {
+              console.log("Selected output:", midiOutput.name);
+            } else {
+               console.log("No MIDI output devices connected.");
+	    }
+	      
+          } else {
+            console.log('No access to MIDI input.');
+          }
+      }
+      
+      function addListeners() {
+	selectRecorder.on('change', changeRecorder);
+        startRecordingButton.on('click', recorderObject1.startRecording);
+	stopRecordingButton.on('click',  recorderObject1.stopRecording);
+	play.on('click', recorderObject1.playEvents);
+	stop.on('click', recorderObject1.stopEvents);
+	encode.on('click', recorderObject1.createMIDIfile);
+	statusMsg.html( "Idle");
+      }
+
+      function changeRecorder(args) {
+	stop.trigger('click');
+	startRecordingButton.off('click');
+	stopRecordingButton.off('click');
+	play.off('click');
+	stop.off('click');
+        console.log(this.value);
+
+        startRecordingButton.on('click', window[this.value].startRecording);
+	stopRecordingButton.on('click',  window[this.value].stopRecording);
+	play.on('click', window[this.value].playEvents);
+	stop.on('click', window[this.value].stopEvents);
+	
+      }
+      
+      
+      
+    </script>
+  </body>
+</html>

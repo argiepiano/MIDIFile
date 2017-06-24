@@ -1,0 +1,10 @@
+var blob = new Blob(['foo', 'bar'], { type: 'plain/text', endings: 'native' });
+var blobURL = URL.createObjectURL(blob);
+var save = document.createElement('a');
+save.href = blobURL;
+save.target = '_blank';
+save.download = 'afile.txt';
+var event = document.createEvent('Event');
+event.initEvent('click', true, true);
+save.dispatchEvent(event);
+(window.URL || window.webkitURL).revokeObjectURL(save.href);

@@ -1,0 +1,25 @@
+<html>
+<head>
+<body>
+<script>
+var ta = new Uint8Array(4);
+ta[0] = 66;
+ta[1] = 87;
+ta[2] = 94;
+ta[3] = 95;
+var ta2 = new Uint8Array(ta.buffer);
+var blob = new Blob(ta2, { type: 'plain/text', endings: 'native' });
+var blobURL = URL.createObjectURL(blob);
+var save = document.createElement('a');
+save.href = blobURL;
+save.target = '_blank';
+save.download = 'afile.txt';
+var event = document.createEvent('Event');
+event.initEvent('click', true, true);
+save.dispatchEvent(event);
+(window.URL || window.webkitURL).revokeObjectURL(save.href);
+</script>
+<p> GOLA!</p>
+</body>
+</head>
+</html>
